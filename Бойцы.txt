@@ -1,0 +1,72 @@
+import random
+
+
+class Fighter:
+    def __init__(self, title):
+        self.health = 100
+        self.stamina = 100
+        self.shield = 50
+        self.is_attacking = None
+        self.title = title
+
+    def guard(self):
+        print(f"{self.title} в защите!")
+
+    def strike(self, opponent):
+        if self.stamina == 0:
+            damage = random.randint(0, 10)
+            block_damage = random.randint(0, 10)
+        else:
+            damage = random.randint(10, 30)
+            block_damage = random.randint(0, 20)
+
+        if not opponent.is_attacking and opponent.shield != 0:
+            opponent.health = max(opponent.health - block_damage, 10)
+            opponent.shield = max(opponent.shield - random.randint(0, 10), 0)
+        else:
+            opponent.health = max(opponent.health - damage, 10)
+
+        self.stamina = max(self.stamina - 10, 0)
+
+        print(f"{self.title} ударил! У {opponent.title} осталось {opponent.health} здоровья и {opponent.shield} щита!")
+
+        if opponent.health == 10:
+            print(f"Решите судьбу {opponent.title}! + пощадить, - казнить")
+            while True:
+                choice = input()
+                if choice == '+':
+                    print(f"{opponent.title} прощён!")
+                    quit()
+                elif choice == '-':
+                    print(f"{opponent.title} погибает в мучениях!")
+                    quit()
+                else:
+                    print("Ждём вашего решения!")
+
+
+fighter1 = Fighter("Боец 1")
+fighter2 = Fighter("Боец 2")
+
+while True:
+    move1 = random.randint(1, 2)
+    move2 = random.randint(1, 2)
+
+    fighter1.is_attacking = True if move1 == 1 else False
+    fighter2.is_attacking = True if move2 == 1 else False
+
+    if fighter1.is_attacking and fighter2.is_attacking:
+        fighter1.strike(fighter2)
+        fighter2.strike(fighter1)
+        print("--------------------------------")
+    elif fighter1.is_attacking and not fighter2.is_attacking:
+        fighter1.strike(fighter2)
+        fighter2.guard()
+        print("--------------------------------")
+    elif not fighter1.is_attacking and fighter2.is_attacking:
+        fighter1.guard()
+        fighter2.strike(fighter1)
+        print("--------------------------------")
+    else:
+        fighter1.guard()
+        fighter2.guard()
+        print("--------------------------------")
